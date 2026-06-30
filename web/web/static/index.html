@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="微信聊天机器人管理面板 - 监控状态、查看聊天记录、编辑配置与性格设定">
+    <title>ChatBot 管理面板</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <span class="logo-icon">🤖</span>
+                <span class="logo-text">ChatBot</span>
+            </div>
+        </div>
+        <ul class="nav-list">
+            <li class="nav-item active" data-page="dashboard" id="nav-dashboard">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">仪表盘</span>
+            </li>
+            <li class="nav-item" data-page="conversations" id="nav-conversations">
+                <span class="nav-icon">💬</span>
+                <span class="nav-label">聊天记录</span>
+            </li>
+            <li class="nav-item" data-page="persona" id="nav-persona">
+                <span class="nav-icon">🎭</span>
+                <span class="nav-label">性格设定</span>
+            </li>
+            <li class="nav-item" data-page="config" id="nav-config">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">系统配置</span>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="status-indicator" id="bot-status-indicator">
+                <span class="status-dot"></span>
+                <span class="status-text">连接中...</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Dashboard Page -->
+        <section class="page active" id="page-dashboard">
+            <div class="page-header">
+                <h1>仪表盘</h1>
+                <button class="btn btn-ghost" id="btn-refresh-status" onclick="refreshDashboard()">
+                    <span>🔄</span> 刷新
+                </button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card" id="stat-status">
+                    <div class="stat-icon">🟢</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-bot-status">--</span>
+                        <span class="stat-label">运行状态</span>
+                    </div>
+                </div>
+                <div class="stat-card" id="stat-messages">
+                    <div class="stat-icon">💬</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total-messages">--</span>
+                        <span class="stat-label">总消息数</span>
+                    </div>
+                </div>
+                <div class="stat-card" id="stat-users">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total-users">--</span>
+                        <span class="stat-label">对话用户数</span>
+                    </div>
+                </div>
+                <div class="stat-card" id="stat-tokens">
+                    <div class="stat-icon">🔤</div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total-tokens">--</span>
+                        <span class="stat-label">Token 用量</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>机器人信息</h2>
+                <div class="info-grid" id="bot-info-grid">
+                    <div class="info-item">
+                        <span class="info-label">性格名称</span>
+                        <span class="info-value" id="info-persona-name">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">AI 模型</span>
+                        <span class="info-value" id="info-model">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">API 地址</span>
+                        <span class="info-value" id="info-api-base">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">启动时间</span>
+                        <span class="info-value" id="info-uptime">--</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conversations Page -->
+        <section class="page" id="page-conversations">
+            <div class="page-header">
+                <h1>聊天记录</h1>
+            </div>
+            <div class="conversations-layout">
+                <div class="user-list-panel">
+                    <div class="search-bar">
+                        <input type="text" placeholder="搜索用户..." id="user-search" oninput="filterUsers()">
+                    </div>
+                    <ul class="user-list" id="user-list">
+                        <li class="user-list-empty">暂无聊天记录</li>
+                    </ul>
+                </div>
+                <div class="chat-panel">
+                    <div class="chat-header" id="chat-header">
+                        <span class="chat-title">选择一个用户查看聊天记录</span>
+                        <button class="btn btn-danger btn-sm" id="btn-clear-history" onclick="clearHistory()" style="display:none">
+                            🗑️ 清空记录
+                        </button>
+                    </div>
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="chat-empty">
+                            <span class="chat-empty-icon">💬</span>
+                            <p>选择左侧用户查看聊天记录</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Persona Page -->
+        <section class="page" id="page-persona">
+            <div class="page-header">
+                <h1>性格设定</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="btn-save-persona" onclick="savePersona()">
+                        💾 保存
+                    </button>
+                    <button class="btn btn-ghost" id="btn-reload-persona" onclick="reloadPersona()">
+                        🔄 重载
+                    </button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="form-group">
+                    <label for="persona-editor">编辑性格设定 (Markdown + YAML Frontmatter)</label>
+                    <textarea class="code-editor" id="persona-editor" rows="24" spellcheck="false" placeholder="加载中..."></textarea>
+                </div>
+                <div class="editor-hint">
+                    <p>📝 格式说明：文件开头使用 <code>---</code> 包围的 YAML 定义元数据（name, greeting），其余部分为 Markdown 格式的性格描述，将作为 system prompt 注入 AI 模型。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Config Page -->
+        <section class="page" id="page-config">
+            <div class="page-header">
+                <h1>系统配置</h1>
+                <button class="btn btn-primary" id="btn-save-config" onclick="saveConfig()">
+                    💾 保存配置
+                </button>
+            </div>
+            <div class="card">
+                <h2>AI 模型设置</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="config-api-base">API 地址</label>
+                        <input type="text" id="config-api-base" placeholder="https://api.openai.com/v1">
+                    </div>
+                    <div class="form-group">
+                        <label for="config-api-key">API 密钥</label>
+                        <input type="password" id="config-api-key" placeholder="sk-...">
+                    </div>
+                    <div class="form-group">
+                        <label for="config-model">模型名称</label>
+                        <input type="text" id="config-model" placeholder="gpt-4o">
+                    </div>
+                    <div class="form-group">
+                        <label for="config-temperature">温度 (0.0 - 2.0)</label>
+                        <input type="number" id="config-temperature" min="0" max="2" step="0.1" placeholder="0.7">
+                    </div>
+                    <div class="form-group">
+                        <label for="config-max-tokens">最大 Token 数</label>
+                        <input type="number" id="config-max-tokens" min="1" max="128000" placeholder="2048">
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>白名单设置</h2>
+                <div class="form-group">
+                    <label for="config-whitelist">允许回复的用户 ID（每行一个，留空则回复所有人）</label>
+                    <textarea id="config-whitelist" rows="4" placeholder="user_id_1&#10;user_id_2"></textarea>
+                </div>
+            </div>
+            <div class="card">
+                <h2>记忆设置</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="config-max-history">最大对话轮数</label>
+                        <input type="number" id="config-max-history" min="1" max="500" placeholder="50">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

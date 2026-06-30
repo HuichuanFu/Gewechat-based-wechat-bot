@@ -1,0 +1,1 @@
+import{h as t}from"./index.js";async function f(){return t.get("/workflow")}async function w(o,r){return t.get(`/workflow/${o}/${r}`)}async function l(o,r,n){return t.post(`/workflow/${o}/${r}`,n)}async function s(o,r,n){return t.put(`/workflow/${o}/${r}`,n)}async function a(o,r){return t.delete(`/workflow/${o}/${r}`)}export{l as c,a as d,w as g,f as l,s as u};

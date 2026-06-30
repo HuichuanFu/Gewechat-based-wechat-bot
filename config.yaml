@@ -1,0 +1,69 @@
+# ============================================
+# 微信聊天机器人 - 主配置文件
+# ============================================
+
+# AI 模型配置 (OpenAI 兼容格式)
+# 支持: OpenAI, DeepSeek, 通义千问, 月之暗面, 零一万物 等
+ai:
+  # API 地址 (根据你使用的模型服务商修改)
+  # OpenAI:     https://api.openai.com/v1
+  # DeepSeek:   https://api.deepseek.com/v1
+  # 通义千问:    https://dashscope.aliyuncs.com/compatible-mode/v1
+  # 月之暗面:    https://api.moonshot.cn/v1
+  api_base: "https://api.deepseek.com/v1"
+
+  # API 密钥 (也可通过环境变量 CHATBOT_API_KEY 设置)
+  api_key: "your-api-key-here"
+
+  # 模型名称
+  model: "deepseek-chat"
+
+  # 最大生成 token 数
+  max_tokens: 2048
+
+  # 温度参数 (0.0-2.0, 越高越随机)
+  temperature: 0.7
+
+  # 后台主动思考间隔 (分钟)
+  autonomous_interval_minutes: 60
+
+# 微信配置 (Gewechat - iPad 协议)
+wechat:
+  base_url: "http://127.0.0.1:2531/v2/api"
+  token: ""
+  app_id: ""
+  webhook_host: "http://127.0.0.1:8000"
+  webhook_port: 8000
+  
+  # 群聊白名单正则 (留空则不响应群消息，填 ".*" 则响应所有群)
+  # 示例: "^(技术交流群|AI学习群)$" 只在这两个群回复
+  group_whitelist: ""
+
+  # 群聊中是否仅响应 @机器人 的消息
+  group_at_only: true
+
+# 白名单 - 只回复这些用户的消息 (留空则回复所有人)
+# 填写微信用户 wxid
+whitelist: []
+  # - "wxid_example"
+
+# 对话记忆配置
+memory:
+  # 每个用户保留的最大对话轮数
+  max_history: 5000
+  # SQLite 数据库文件路径
+  db_path: "data/chat_history.db"
+
+# 性格设定文件路径
+persona:
+  file: "persona.md"
+
+# Web 管理面板配置
+web:
+  host: "127.0.0.1"
+  port: 8080
+
+# 日志配置
+logging:
+  level: "INFO"
+  file: "logs/bot.log"
